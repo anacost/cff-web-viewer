@@ -158,21 +158,39 @@
 			$(item_div).append('<p>cff-version: '+cff_obj['cff-version']+'</p>');
 			$(item_div).append('<p>'+cff_obj['message']+'</p>');
 			var author_el = $('<p></p>')
+			var author_string_hack = ''
 			for (var a = 0; a < cff_obj['authors'].length; a++) {
 				var author = cff_obj['authors'][a]
 				var str = ', '
-				if (a == 0) 
+				var temp = ' and '
+				if (a == 0) {
 					str = ''
+					temp = ''
+				}
 				$(author_el).append(str+author['family-names']+'');
+				author_string_hack += (temp+author['family-names']);
 			}
 			$(item_div).append(author_el)
 			$("#cff-info").append(item_div)
+			file_download('myfile.bib', '@misc(temp,\nauthor={'+author_string_hack+'},\n}')
 
 		}
 		
 		
 	}
 	function validate_cff(cff_string, schema_string) {
+	}
+	function file_download(filename, text) {
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+		element.setAttribute('download', filename);
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
 	}
 	window.onload = start;
 </script>
