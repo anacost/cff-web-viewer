@@ -5,6 +5,7 @@
 	<link rel="stylesheet" href="example.css">
 	<title>CFF Web Editor Example</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.12.0/js-yaml.min.js"></script>
 </head>
 <body>
 	<header id="header" role="banner">
@@ -16,14 +17,11 @@
 	</header>
 	<section id="main-content">
 		<h1>CFF Editor Demo</h1>
-		<section class="pre-drop">
+		<section id="pre-drop">
 			<p>An example webpage for testing....</p>
-			<div class="drop-area">Drop CFF files here</div>
+			<div id="drop-area">Drop CFF files here</div>
 		</section>
-		<section class="no-support-area">
-			<p><strong>Error:</strong> Your browser is not supported.</p>
-		</section>
-		<section class="post-drop">
+		<section id="post-drop">
 			<p>This appears after the user has dropped files. </p>
 			<h2>Found CFF files:</h2>
 		</section>	
@@ -34,8 +32,61 @@
 </body>
 <script>
 	function start() {
-		// do stuff
-	);
+		// 1.  check support for File APIs
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			console.log("This browser supports the File APIs")
+		} else {
+			throw "This browser does not support the File, FileReader, FileList, and/or Blob APIs";
+		}
+		// 2. Set up the zrop zone
+		var drop_area = $("#drop-area")[0];
+			console.log(drop_area)
+			drop_area.addEventListener('dragover', handle_drag_over.bind(this), false);
+			drop_area.addEventListener('drop', handle_file_select.bind(this), false);
+	}
+
+	function handle_drag_over(evt) {
+		evt.stopPropagation();
+		evt.preventDefault();
+		evt.dataTransfer.dropEffect = 'copy'; 
+	}
+
+	function handle_file_select(evt) {
+		evt.stopPropagation();
+		evt.preventDefault();
+		var files = evt.dataTransfer.files;
+		file_details = this.analyse_files(files);
+		$('#pre-drop').hide();
+		$('#post-drop').show();
+
+	}
+
+	/* Loads the text of the files asyncrhonously*/
+	function analyse_files(files) {
+		var cff_files = {};
+		console.log("Analysing files...");
+		for (var i = 0; i < files.length; i++) {
+			if ((files[i].name).toLowerCase().endsWith('.cff')) {
+				console.log("Reading file: "+files[i].name);
+				cff_files[files[i].name] = {
+					'content' : null	
+				}
+				var reader = new FileReader();
+				reader.file = files[i]; 
+				var that = this;
+				reader.onload = function(e) {
+					var file = this.file;
+					//get the file content
+					cff_files[file.name]['content'] = e.target.result;
+					console.log("Finished reading cff file ("+file.name+")")
+					console.log(cff_files[file.name]['content'])
+					var doc = jsyaml.safeLoad(cff_files[file.name]['content']);
+					console.log(doc)
+				}
+				reader.readAsText(files[i]);
+			}
+
+		}
 	}
 	window.onload = start;
 </script>

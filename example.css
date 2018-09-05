@@ -1,0 +1,104 @@
+html {
+	font-family: sans-serif;
+}
+
+
+#pre-drop {
+}
+
+#post-drop {
+	display: none;
+}
+
+
+#drop-area {
+	border: 2px dashed #bbb;
+	border-radius: 7px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	padding: 70px;
+	font: 20pt;
+	text-align: center;
+	color: #ccc;
+}
+
+/*
+ * Key margins
+ */
+
+h1 {
+	font-size: 3em
+}
+
+h1 {
+	font-size: 2em
+}
+
+body {
+	padding: 0;
+	margin: 0;
+	background-color: #FFF;
+}
+
+#main-content {
+	padding: 10px;
+	margin: 0px;
+	background-color: #FFF;
+}
+
+
+
+
+/* 
+ * Horizontal navigation bar
+ */
+
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #000;
+}
+
+nav li {
+    float: left;
+}
+
+nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+nav li a:hover {
+    background-color: #666;
+}
+
+
+/* 
+ * Footer
+ */
+
+footer {
+	margin: 0px;
+	padding: 10px;
+	background-color: #666;
+	color: white;
+	text-align: center;
+}
+
+footer a {
+	text-decoration: underline;
+}
+
+footer a:link {color: white;}      /* unvisited link */
+footer a:visited {color: white;}   /* visited link */
+footer a:hover {color: grey;}     /* mouse over link */
+footer a:active {color: white;}    /* selected link */
+
+
+
