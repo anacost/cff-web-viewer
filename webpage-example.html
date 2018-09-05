@@ -6,6 +6,8 @@
 	<title>CFF Web Editor Example</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.12.0/js-yaml.min.js"></script>
+	<!--<script src="simple-yaml-validator.js"></script>-->
+	<script src=""></script>
 </head>
 <body>
 	<header id="header" role="banner">
@@ -24,6 +26,7 @@
 		<section id="post-drop">
 			<p>This appears after the user has dropped files. </p>
 			<h2>Found CFF files:</h2>
+			<div id='cff-info'><div>
 		</section>	
 	</section>
 	<footer id="footer" role="contentinfo">
@@ -64,29 +67,112 @@
 	/* Loads the text of the files asyncrhonously*/
 	function analyse_files(files) {
 		var cff_files = {};
-		console.log("Analysing files...");
+		var files_to_read = [];
+		console.log("Looking at files...");
 		for (var i = 0; i < files.length; i++) {
-			if ((files[i].name).toLowerCase().endsWith('.cff')) {
-				console.log("Reading file: "+files[i].name);
-				cff_files[files[i].name] = {
-					'content' : null	
-				}
-				var reader = new FileReader();
-				reader.file = files[i]; 
-				var that = this;
-				reader.onload = function(e) {
-					var file = this.file;
-					//get the file content
-					cff_files[file.name]['content'] = e.target.result;
-					console.log("Finished reading cff file ("+file.name+")")
-					console.log(cff_files[file.name]['content'])
-					var doc = jsyaml.safeLoad(cff_files[file.name]['content']);
-					console.log(doc)
-				}
-				reader.readAsText(files[i]);
+			if ((files[i].name).toLowerCase().endsWith('.cff') || (files[i].name == "schema.yaml" )) {
+				files_to_read.push(files[i]);
 			}
+		}
+		for (var i = 0; i < files_to_read.length; i++) {
+			var cur_file = files_to_read[i];
+			console.log("Reading file: "+cur_file.name);
+			cff_files[cur_file.name] = {
+				'content' : null	
+			}
+			var reader = new FileReader();
+			reader.file = cur_file; 
+			var that = this;
+			reader.onload = function(e) {
+				var file = this.file;
+				//get the file content
+				cff_files[file.name]['content'] = e.target.result;
+				console.log("Finished reading cff file ("+file.name+")")
+				console.log(cff_files)
+				var waitingFor = [];
+				var waitingForString = "Waiting for: ";
+				for (var property in cff_files) {
+					if (cff_files.hasOwnProperty(property)) {
+						// do stuff
+						console.log(cff_files[property])
+						if (cff_files[property]['content'] == null) {
+							waitingFor.push(property)
+							waitingForString += property+', ';
+						}
+					}
+				}
+				if (waitingFor.length == 0) {
+					console.log("Finished reading all relevent files!")
+					//that.read_menu(texFiles);
+					process_cff_and_schema(cff_files);
+				} else {
+					console.log(waitingForString);
+				}
+
+			}
+			reader.readAsText(cur_file);
+		}
+	}
+	function process_cff_and_schema(files) {
+		console.log("Made it here!")
+		console.log(files)
+		var schema_keys = [];
+		var cff_keys = [];
+		for (var property in files) {
+			if (files.hasOwnProperty(property)) {
+				console.log(property)
+				if (property.toLowerCase().endsWith('.cff')) {
+					cff_keys.push(property)
+				} else if (property == 'schema.yaml') {
+					schema_keys.push(property)
+				} else {
+					console.warn('Unexpected file name!');
+				}
+			}
+		}
+		console.log("schema keys:")
+		console.log(schema_keys)
+		console.log("cff keys:")
+		console.log(cff_keys)
+		if (schema_keys.length > 1) {
+			throw "Multiple schema files!";
+		}
+		if (schema_keys.length == 0) {
+			console.warn("No schema file!");
+		}
+		for (var i = 0; i < cff_keys.length; i++) {
+			var cur_cff = cff_keys[i];
+			console.log("Parsing "+cur_cff+" as yaml...")
+			// NOTE: Safe load may not work with regex
+			var cff_obj = null
+			if (schema_keys[0]) {
+				cff_obj  = jsyaml.safeLoad(files[cur_cff]['content'],files[schema_keys[0]]);
+				console.log(cff_obj)
+				validate_cff(files[cur_cff]['content'], files[schema_keys[0]])
+			} else {
+				cff_obj = jsyaml.safeLoad(files[cur_cff]['content']);
+				console.log(cff_obj);
+				console.log("No schema!")
+			}
+			var item_div = $('<div class="cff-item"><p class="cff-title">'+cur_cff+'</p></div>');
+			$(item_div).append('<p>cff-version: '+cff_obj['cff-version']+'</p>');
+			$(item_div).append('<p>'+cff_obj['message']+'</p>');
+			var author_el = $('<p></p>')
+			for (var a = 0; a < cff_obj['authors'].length; a++) {
+				var author = cff_obj['authors'][a]
+				var str = ', '
+				if (a == 0) 
+					str = ''
+				$(author_el).append(str+author['family-names']+'');
+			}
+			$(item_div).append(author_el)
+			$("#cff-info").append(item_div)
 
 		}
+		
+		
+	}
+	function validate_cff(cff_string, schema_string) {
 	}
 	window.onload = start;
 </script>

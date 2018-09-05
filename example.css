@@ -17,9 +17,16 @@ html {
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	padding: 70px;
-	font: 20pt;
 	text-align: center;
 	color: #ccc;
+}
+
+.cff-item {
+	background-color: #DEB1D8;
+} 
+
+p.cff-title {
+	font-size: 30pt;
 }
 
 /*
