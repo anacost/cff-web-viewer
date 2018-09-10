@@ -1,0 +1,13 @@
+cff-version: 1.0.0
+message: If you use this software, please cite it as below.
+authors:
+  - family-names: Walker
+    given-names: Matthew
+    orcid: https://orcid.org/0000-000X-XXXX-
+  - family-names: Conrado
+    given-names: Ana
+    orcid: https://orcid.org/0000-0001-6345-987X
+title: cff-web-viewer
+version: 1.0.0
+doi: XXXX/zenodo.XXx
+date-released: 2018-09-05
