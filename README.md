@@ -1,6 +1,6 @@
 # Drag and Drop CFF Reader/Editor/Exporter
 
-[![DOI](https://zenodo.org/badge/147705317.svg)](https://zenodo.org/badge/latestdoi/147705317)
+
 
 A very basic template of a project on which to implement web-based
  cff validation, viewing, editing, export of the [Citation File Format (CFF)](https://citation-file-format.github.io).
