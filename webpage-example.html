@@ -34,6 +34,7 @@
 	</footer>
 </body>
 <script>
+	var cff_array = [];
 	function start() {
 		// 1.  check support for File APIs
 		if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -154,6 +155,7 @@
 				console.log(cff_obj);
 				console.log("No schema!")
 			}
+			cff_array.push(cff_obj)
 			var item_div = $('<div class="cff-item"><p class="cff-title">'+cur_cff+'</p></div>');
 			$(item_div).append('<p>cff-version: '+cff_obj['cff-version']+'</p>');
 			$(item_div).append('<p>'+cff_obj['message']+'</p>');
@@ -171,12 +173,25 @@
 				author_string_hack += (temp+author['family-names']);
 			}
 			$(item_div).append(author_el)
+			var bib_download_button = $('<button data-cff-selector="'+i.toString()+'">Export bib</button>')
+			$(bib_download_button).on('click',  function () {
+				// Get cff index
+				var cff_i = $(this).data('cffSelector')
+				console.log("bib export cff id: "+cff_i.toString())
+				console.log("bib to export: ")
+				console.log(cff_array[cff_i])
+				//file_download('temp.bib', create_bib_string(cff_array[cff_i]))
+				alert(create_bib_string(cff_array[cff_i]))
+			})
+			$(item_div).append(bib_download_button)
 			$("#cff-info").append(item_div)
-			file_download('myfile.bib', '@misc(temp,\nauthor={'+author_string_hack+'},\n}')
-
+			//file_download('myfile.bib', '@misc(temp,\nauthor={'+author_string_hack+'},\n}')
 		}
-		
-		
+	}
+	function create_bib_string(cff) {
+		// Todo create string
+		var temp_string = '@misc(tempid,\ntitle={'+cff.title+'},\n}'
+		return temp_string
 	}
 	function validate_cff(cff_string, schema_string) {
 	}
